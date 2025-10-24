@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pinterest Demo with Login & Downloads</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-color: #fff;
+        }
+        header {
+            background-color: #e60023;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h2 { margin: 0; }
+        .search-bar {
+            width: 300px;
+            padding: 10px;
+            border: none;
+            border-radius: 20px;
+        }
+        .login-form {
+            padding: 50px 20px;
+            text-align: center;
+            background-color: #f9f9f9;
+        }
+        .login-form input {
+            margin: 10px;
+            padding: 10px;
+            font-size: 1em;
+            width: 200px;
+        }
+        .login-form button {
+            background-color: #e60023;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        .hero, .pins-grid, .board-section {
+            display: none; /* Hidden until login */
+        }
+        .hero {
+            padding: 50px 20px;
+            text-align: center;
+            background-color: #f0f0f0;
+        }
+        .pins-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+        }
+        .pin {
+            width: 250px;
+            margin: 10px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .pin img {
+            width: 100%;
+            height: auto;
+        }
+        .pin .overlay {
+            position: absolute;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            color: #fff;
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .pin button {
+            background-color: #e60023;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .board-section {
+            padding: 50px 20px;
+            text-align: center;
+            background-color: #f9f9f9;
+        }
+        .board-section input {
+            margin: 10px;
+            padding: 10px;
+            width: 200px;
+        }
+        .board-section button {
+            background-color: #e60023;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        footer {
+            background-color: #000;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+        @media (max-width: 768px) {
+            .pins-grid { flex-direction: column; align-items: center; }
+            .pin { width: 90%; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h2>Pinterest Demo</h2>
+        <input type="text" class="search-bar" id="search" placeholder="Search for ideas..." onkeyup="searchPins()">
+    </header>
+    
+    <section class="login-form" id="loginForm">
+        <h2>Login to Explore Pins</h2>
+        <input type="text" id="username" placeholder="Username" required>
+        <br>
+        <input type="password" id="password" placeholder="Password" required>
+        <br>
+        <button onclick="login()">Login</button>
+        <p>Demo credentials: user / pass</p>
+    </section>
+    
+    <section class="hero" id="hero">
+        <h1>Discover and Save Ideas</h1>
+        <p>Find inspiration for your next project.</p>
+    </section>
+    
+    <section class="pins-grid" id="pinsGrid">
+        <!-- Mock pins with downloadable images -->
+        <div class="pin">
+            <img src="https://via.placeholder.com/250x300/ff0000/ffffff?text=Food+Recipe" alt="Food Recipe">
+            <div class="overlay">
+                <p>Delicious Pasta Recipe</p>
+                <button onclick="downloadWallpaper('https://via.placeholder.com/800x600/ff0000/ffffff?text=Wallpaper+1')">Download Wallpaper</button>
+                <button onclick="pinToBoard('Food')">Pin to Board</button>
+            </div>
+        </div>
+        <div class="pin">
+            <img src="https://via.placeholder.com/250x350/00ff00/ffffff?text=Travel+Spot" alt="Travel Spot">
+            <div class="overlay">
+                <p>Amazing Beach Destination</p>
+                <button onclick="downloadWallpaper('https://via.placeholder.com/800x600/00ff00/ffffff?text=Wallpaper+2')">Download Wallpaper</button>
+                <button onclick="pinToBoard('Travel')">Pin to Board</button>
+            </div>
+        </div>
+        <div class="pin">
+            <img src="https://via.placeholder.com/250x400/0000ff/ffffff?text=DIY+Project" alt="DIY Project">
+            <div class="overlay">
+                <p>Easy Home Decor DIY</p>
+                <button onclick="downloadWallpaper('https://via.placeholder.com/800x600/0000ff/ffffff?text=Wallpaper+3')">Download Wallpaper</button>
+                <button onclick="pinToBoard('DIY')">Pin to Board</button>
+            </div>
+        </div>
+        <div class="pin">
+            <img src="https://via.placeholder.com/250x320/ff00ff/ffffff?text=Fashion+Outfit" alt="Fashion Outfit">
+            <div class="overlay">
+                <p>Stylish Summer Outfit</p>
+                <button onclick="downloadWallpaper('https://via.placeholder.com/800x600/ff00ff/ffffff?text=Wallpaper+4')">Download Wallpaper</button>
+                <button onclick="pinToBoard('Fashion')">Pin to Board</button>
+            </div>
+        </div>
+        <!-- Add more pins as needed -->
+    </section>
+    
+    <section class="board-section" id="boardSection">
+        <h2>Your Boards</h2>
+        <input type="text" id="newBoard" placeholder="Create a new board">
+        <button onclick="createBoard()">Create Board</button>
+        <div id="boardsList"></div>
+    </section>
+    
+    <footer>
+        <p>&copy; 2023 Pinterest Demo. Not affiliated with Pinterest.</p>
+    </footer>
+    
+    <script>
+        let boards = ['Food', 'Travel', 'DIY', 'Fashion']; // Mock boards
+        
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            if (username === 'user' && password === 'pass') {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('hero').style.display = 'block';
+                document.getElementById('pinsGrid').style.display = 'flex';
+                document.getElementById('boardSection').style.display = 'block';
+                displayBoards();
+            } else {
+                alert('Invalid credentials. Try user/pass.');
+            }
+        }
+        
+        function searchPins() {
+            const query = document.getElementById('search').value.toLowerCase();
+            const pins = document.querySelectorAll('.pin');
+            pins.forEach(pin => {
+                const text = pin.textContent.toLowerCase();
+                pin.style.display = text.includes(query) ? 'block' : 'none';
+            });
+        }
+        
+        function downloadWallpaper(url) {
+            // Simulate download by opening the image in a new tab (browsers handle download prompts)
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'wallpaper.jpg'; // Forces download in some browsers
+            link.target = '_blank';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            alert('Wallpaper download initiated! Check your downloads folder.');
+        }
+        
+        function pinToBoard(boardName) {
+            alert(`Pinned to ${boardName} board! (Mock action)`);
+        }
+        
+        function createBoard() {
+            const newBoard = document.getElementById('newBoard').value;
+            if (newBoard) {
+                boards.push(newBoard);
+                displayBoards();
+                document.getElementById('newBoard').value = '';
+            }
+        }
+        
+        function displayBoards() {
+            const boardsList = document.getElementById('boardsList');
+            boardsList.innerHTML = '';
+            boards.forEach(board => {
+                const div = document.createElement('div');
+                div.textContent = board;
+                div.style.margin = '10px';
+                div.style.padding = '10px';
+                div.style.backgroundColor = '#e60023';
+                div.style.color = '#fff';
+                div.style.borderRadius = '5px';
+                boardsList.appendChild(div);
+            });
+        }
+    </script>
+</body>
+</html>
